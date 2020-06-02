@@ -6,6 +6,7 @@
   "author": "Caleb Denio",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/datastore": "^5.1.0",
     "@slack/bolt": "^2.1.1",
     "axios": "^0.19.2"
   },

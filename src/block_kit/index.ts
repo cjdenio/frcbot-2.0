@@ -1,7 +1,12 @@
 import { Team } from "../tba";
-import { Block, KnownBlock } from "@slack/types";
+import { Block, KnownBlock, View } from "@slack/types";
 
-export function team(team: Team): (Block | KnownBlock)[] {
+export * from "./subscribeModal";
+export * from "./appHome";
+
+type BlockList = (Block | KnownBlock)[];
+
+export function team(team: Team): BlockList {
   return [
     {
       type: "section",
@@ -38,6 +43,18 @@ export function team(team: Team): (Block | KnownBlock)[] {
           url: `https://www.thebluealliance.com/team/${team.team_number}`,
         },
       ],
+    },
+  ];
+}
+
+export function help(): BlockList {
+  return [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "Help Text",
+      },
     },
   ];
 }
