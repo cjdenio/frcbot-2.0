@@ -18,7 +18,7 @@ export class TBAClient {
     this.key = key;
   }
 
-  async getTeam(number: number, simple: boolean = false): Promise<Team> {
+  async getTeam(number: number): Promise<Team> {
     const resp = await axios(
       `https://www.thebluealliance.com/api/v3/team/frc${number}`,
       {

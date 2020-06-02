@@ -19,6 +19,10 @@ export function team(team: Team): (Block | KnownBlock)[] {
           type: "mrkdwn",
           text: `*Rookie Year*\n${team.rookie_year}`,
         },
+        {
+          type: "mrkdwn",
+          text: `*Hometown*\n${team.city}, ${team.state_prov}, ${team.country}`,
+        },
       ],
     },
     {

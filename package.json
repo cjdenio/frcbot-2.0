@@ -17,6 +17,7 @@
     "checkformat": "prettier --check ."
   },
   "devDependencies": {
+    "@types/node": "^14.0.9",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
