@@ -15,7 +15,7 @@ export async function addSubscription(
   channel: string,
   event: EventBasic
 ): Promise<any> {
-  data.save({
+  await data.save({
     key: data.key(["subscriptions"]),
     data: {
       channel,
@@ -48,4 +48,8 @@ export async function getSubscriptions(
     };
   });
   return newResult;
+}
+
+export async function deleteSubscription(key: string): Promise<any> {
+  await data.delete(data.key(["subscriptions", parseInt(key)]));
 }

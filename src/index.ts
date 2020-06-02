@@ -6,7 +6,12 @@ import * as bk from "./block_kit";
 import * as util from "./util";
 import * as data from "./data";
 
-import { BlockAction } from "@slack/bolt/dist/types/actions/block-action";
+import { Context } from "@slack/bolt/dist/types/middleware";
+
+import {
+  BlockAction,
+  ButtonAction,
+} from "@slack/bolt/dist/types/actions/block-action";
 
 dotenv.config();
 
@@ -17,6 +22,7 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
+// Slash command listeners
 app.command("/frc", async ({ payload, ack, client }) => {
   const parsed = util.parseSlashCommand(payload.text);
 
@@ -47,14 +53,12 @@ app.command("/frc", async ({ payload, ack, client }) => {
   }
 });
 
-app.event("app_home_opened", async ({ event, client, body }) => {
-  const tbaEvent = await tba.getEvent("2019mabos");
-  client.views.publish({
-    user_id: event.user,
-    view: bk.appHome(await data.getSubscriptions(body.team_id)),
-  });
+// Event listeners
+app.event("app_home_opened", async ({ context, body, event }) => {
+  updateAppHome(context, event.user, body.team_id);
 });
 
+// Block action listeners
 app.action("subscribe_event", async ({ ack, body, client }) => {
   ack();
   client.views.open({
@@ -63,6 +67,15 @@ app.action("subscribe_event", async ({ ack, body, client }) => {
   });
 });
 
+app.action("event_options", async ({ ack, body, client, context }) => {
+  ack();
+  await data.deleteSubscription(
+    (<ButtonAction>(<BlockAction>body).actions[0]).value
+  );
+  updateAppHome(context, body.user.id, body.team.id);
+});
+
+// Shortcut listeners
 app.shortcut("subscribe_event", async ({ shortcut, ack, client }) => {
   ack();
   await client.views.open({
@@ -71,16 +84,30 @@ app.shortcut("subscribe_event", async ({ shortcut, ack, client }) => {
   });
 });
 
-app.view("subscribe_event", async ({ view, ack, payload }) => {
+// Modal submission listeners
+app.view("subscribe_event", async ({ view, ack, payload, context, body }) => {
   ack();
   const event = await tba.getEvent(view.state.values.event.event.value);
 
-  data.addSubscription(
+  await data.addSubscription(
     payload.team_id,
     view.state.values.channel.channel.selected_channel,
     event
   );
+  updateAppHome(context, body.user.id, body.team.id);
 });
+
+async function updateAppHome(
+  context: Context,
+  user_id: string,
+  team_id: string
+): Promise<any> {
+  await app.client.views.publish({
+    user_id: user_id,
+    view: bk.appHome(await data.getSubscriptions(team_id)),
+    token: context.botToken,
+  });
+}
 
 (async () => {
   await app.start(process.env.PORT || 3000);
