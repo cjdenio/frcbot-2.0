@@ -33,7 +33,7 @@ app.command("/frc", async ({ payload, ack, client }) => {
       await ack({
         text: "",
         blocks: bk.team(team),
-        response_type: "in_channel"
+        response_type: "in_channel",
       });
       break;
     case "subscribe":
