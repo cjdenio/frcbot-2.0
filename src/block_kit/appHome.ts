@@ -21,14 +21,16 @@ export function appHome(events: SubscribedEvent[]): View {
         },
       },
       {
-          type: "divider"
+        type: "divider",
       },
       ...events.map((item) => {
         return {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `<https://www.thebluealliance.com/event/${item.event.key}|*${item.event.name || item.event.key}*> in <#${item.channel}>`,
+            text: `<https://www.thebluealliance.com/event/${item.event.key}|*${
+              item.event.name || item.event.key
+            }*> in <#${item.channel}>`,
           },
           accessory: {
             type: "button",
@@ -36,9 +38,9 @@ export function appHome(events: SubscribedEvent[]): View {
             value: item.key,
             text: {
               type: "plain_text",
-              text: "Options"
-            }
-          }
+              text: "Options",
+            },
+          },
         };
       }),
       {
