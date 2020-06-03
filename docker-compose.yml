@@ -1,0 +1,16 @@
+version: "3"
+services:
+  main:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATASTORE_EMULATOR_HOST: datastore:8081
+      DATASTORE_PROJECT_ID: the-blue-alliance-slack
+  datastore:
+    image: google/cloud-sdk
+    command: gcloud beta emulators datastore start --host-port 0.0.0.0:8081
+    environment:
+      CLOUDSDK_CORE_PROJECT: the-blue-alliance-slack
+    expose:
+      - 8081
