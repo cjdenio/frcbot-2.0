@@ -1,5 +1,4 @@
 import { App } from "@slack/bolt";
-import * as dotenv from "dotenv";
 import { TBAClient, Team } from "./tba";
 
 import * as bk from "./block_kit";
@@ -14,8 +13,6 @@ import {
   BlockAction,
   ButtonAction,
 } from "@slack/bolt/dist/types/actions/block-action";
-
-dotenv.config();
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 

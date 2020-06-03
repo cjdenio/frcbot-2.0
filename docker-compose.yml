@@ -7,6 +7,7 @@ services:
     environment:
       DATASTORE_EMULATOR_HOST: datastore:8081
       DATASTORE_PROJECT_ID: the-blue-alliance-slack
+    env_file: .env
   datastore:
     image: google/cloud-sdk
     command: gcloud beta emulators datastore start --host-port 0.0.0.0:8081
@@ -16,6 +17,7 @@ services:
       - 8081
   ngrok:
     image: wernight/ngrok
+    env_file: .ngrok.env
     environment:
       NGROK_PORT: main:3000
     ports:

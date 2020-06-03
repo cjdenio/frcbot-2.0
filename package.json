@@ -14,14 +14,14 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "nodemon -x ts-node src/index.ts",
     "format": "prettier --write .",
-    "checkformat": "prettier --check ."
+    "checkformat": "prettier --check .",
+    "docker-autosync": "nodemon -e ts,json -x docker cp . frcbot-20_main_1:/usr/src/app"
   },
   "devDependencies": {
     "@types/express": "^4.17.6",
     "@types/node": "^14.0.9",
-    "dotenv": "^8.2.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
