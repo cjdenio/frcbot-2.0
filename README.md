@@ -9,6 +9,7 @@ This will eventually replace the current FRCBot, and Discord support will be add
 ## Getting set up for development
 
 This is not a perfected process, but here goes:
+
 1. Clone the repository with `git clone https://github.com/deniosoftware/frcbot-2.0`
 2. Install [Docker](https://) and Docker Compose
 3. In the `frcbot-2.0/` folder, run `docker-compose up`
