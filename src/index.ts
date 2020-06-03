@@ -8,6 +8,8 @@ import * as data from "./data";
 
 import { Context } from "@slack/bolt/dist/types/middleware";
 
+import { FRCBotReceiver } from "./FRCBotReceiver";
+
 import {
   BlockAction,
   ButtonAction,
@@ -19,7 +21,9 @@ const tba = new TBAClient(process.env.TBA_API_KEY);
 
 const app = new App({
   token: process.env.SLACK_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  receiver: new FRCBotReceiver({
+    signingSecret: process.env.SLACK_SIGNING_SECRET,
+  }),
 });
 
 // Slash command listeners
@@ -44,6 +48,7 @@ app.command("/frc", async ({ payload, ack, client }) => {
         view: bk.subscribeModal(),
       });
       break;
+    case "help":
     case null:
     case "":
     default:
