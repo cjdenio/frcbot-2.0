@@ -14,3 +14,9 @@ services:
       CLOUDSDK_CORE_PROJECT: the-blue-alliance-slack
     expose:
       - 8081
+  ngrok:
+    image: wernight/ngrok
+    environment:
+      NGROK_PORT: main:3000
+    ports:
+      - "3001:4040"
