@@ -1,6 +1,6 @@
 import { View } from "@slack/types";
 
-export function subscribeModal(): View {
+export function subscribeModal(_?: { channel?: string; event?: string }): View {
   return {
     type: "modal",
     title: {
@@ -23,6 +23,7 @@ export function subscribeModal(): View {
             type: "plain_text",
             text: "e.g. 2020mabos",
           },
+          ...(_?.event ? { initial_value: _.event } : {}),
         },
         label: {
           type: "plain_text",
@@ -39,6 +40,7 @@ export function subscribeModal(): View {
             type: "plain_text",
             text: "Select one...",
           },
+          ...(_?.channel ? { initial_channel: _.channel } : {}),
         },
         label: {
           type: "plain_text",

@@ -42,7 +42,14 @@ app.command("/frc", async ({ payload, ack, client }) => {
       await ack();
       await client.views.open({
         trigger_id: payload.trigger_id,
-        view: bk.subscribeModal(),
+        view: bk.subscribeModal({
+          ...(payload.channel_id.toLowerCase().startsWith("c")
+            ? { channel: payload.channel_id }
+            : {}),
+          ...(parsed.args[0] && parsed.args[0] != ""
+            ? { event: parsed.args[0] }
+            : {}),
+        }),
       });
       break;
     case "help":
