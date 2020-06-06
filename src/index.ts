@@ -1,18 +1,17 @@
 import { App } from "@slack/bolt";
-import { TBAClient, Team } from "./tba";
+import { TBAClient, Team, Event } from "./tba";
 
 import * as bk from "./block_kit";
 import * as util from "./util";
 import * as data from "./data";
 
-import { Context } from "@slack/bolt/dist/types/middleware";
+import { Context } from "@slack/bolt";
 
 import { FRCBotReceiver } from "./FRCBotReceiver";
 
-import {
-  BlockAction,
-  ButtonAction,
-} from "@slack/bolt/dist/types/actions/block-action";
+import installer from "./installer/InstallProvider";
+
+import { BlockAction, ButtonAction } from "@slack/bolt";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
@@ -21,6 +20,9 @@ const app = new App({
   receiver: new FRCBotReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
   }),
+  authorize: async ({ teamId }) => {
+    return await installer.authorize({ teamId });
+  },
 });
 
 // Slash command listeners
@@ -29,7 +31,13 @@ app.command("/frc", async ({ payload, ack, client }) => {
 
   switch (parsed.command) {
     case "team":
-      let team = await tba.getTeam(parseInt(parsed.args[0]));
+      let team: Team;
+      try {
+        team = await tba.getTeam(parseInt(parsed.args[0]));
+      } catch (e) {
+        await ack("I couldn't find that team :cry:");
+        return;
+      }
 
       await ack({
         text: "",
@@ -97,14 +105,29 @@ app.shortcut("subscribe_event", async ({ shortcut, ack, client }) => {
 
 // Modal submission listeners
 app.view("subscribe_event", async ({ view, ack, payload, context, body }) => {
-  await ack();
-  const event = await tba.getEvent(view.state.values.event.event.value);
+  let event: Event;
+  try {
+    event = await tba.getEvent(view.state.values.event.event.value);
+  } catch (e) {
+    await ack({
+      response_action: "errors",
+      errors: {
+        event: "I couldn't find that event.",
+      },
+    });
+    return;
+  }
 
-  await data.addSubscription(
-    payload.team_id,
-    view.state.values.channel.channel.selected_channel,
-    event
-  );
+  await ack();
+
+  await data.addSubscription({
+    channel: view.state.values.channel.channel.selected_channel,
+    team_id: payload.team_id,
+    event: {
+      key: event.key,
+      name: event.name,
+    },
+  });
   await updateAppHome(context, body.user.id, body.team.id);
 });
 

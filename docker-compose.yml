@@ -22,3 +22,10 @@ services:
       NGROK_PORT: main:3000
     ports:
       - "3001:4040"
+  dsui:
+    build: dsui/
+    environment:
+      DATASTORE_PROJECT_ID: the-blue-alliance-slack
+      DATASTORE_EMULATOR_HOST: datastore:8081
+    ports:
+      - "3002:3000"

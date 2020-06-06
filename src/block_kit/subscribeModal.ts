@@ -130,6 +130,23 @@ export function subscribeModal(_?: { channel?: string; event?: string }): View {
           text: "Matches",
         },
       },
+      {
+        type: "input",
+        block_id: "additional_teams",
+        element: {
+          type: "plain_text_input",
+          action_id: "additional",
+          placeholder: {
+            type: "plain_text",
+            text: "e.g. 6763, 1519, 254",
+          },
+        },
+        label: {
+          type: "plain_text",
+          text: "Additional Teams",
+        },
+        optional: true,
+      },
     ],
   };
 }
