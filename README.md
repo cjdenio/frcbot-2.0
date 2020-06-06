@@ -19,5 +19,7 @@ This is not a perfected process, but here goes:
 ### Ports:
 
 `http://localhost:3000` is your FRCBot instance.
+
 `http://localhost:3001` is the ngrok dashboard.
+
 `http://localhost:3002` is a Datastore viewer.
