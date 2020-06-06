@@ -51,13 +51,26 @@ export function appHome(events: SubscribedEvent[]): View {
             }*> in <#${item.channel}>`,
           },
           accessory: {
-            type: "button",
-            action_id: "event_options",
-            value: item.key,
-            text: {
-              type: "plain_text",
-              text: "Options",
-            },
+            type: "overflow",
+            action_id: `event_options:${item.key}`,
+            options: [
+              {
+                text: {
+                  type: "plain_text",
+                  emoji: true,
+                  text: ":gear: Options",
+                },
+                value: "options",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  emoji: true,
+                  text: ":x: Delete",
+                },
+                value: "delete",
+              },
+            ],
           },
         };
       }),

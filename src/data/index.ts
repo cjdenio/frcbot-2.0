@@ -2,15 +2,24 @@ import { Datastore } from "@google-cloud/datastore";
 import { Event, EventBasic } from "../tba";
 import { Installation, InstallationQuery } from "@slack/oauth";
 
+export type NotificationType =
+  | "match_score"
+  | "event_schedule"
+  | "upcoming_match";
+
 export interface SubscribedEvent {
   event: EventBasic;
   channel: string;
   team_id: string;
+  additional_teams: string[];
+  type: "team" | "all";
   key?: string;
+  notification_types: NotificationType[];
 }
 
 const data = new Datastore();
 
+// Subscriptions
 export async function addSubscription(
   subscription: SubscribedEvent
 ): Promise<any> {
@@ -29,34 +38,48 @@ export async function getSubscriptions(
     query = query.filter("channel", channel);
   }
 
-  let result = await data.runQuery(query);
-  let newResult = result[0].map((i) => {
-    return {
-      event: {
-        name: i["event_name"],
-        key: i["event"],
-      },
-      channel: i["channel"],
-      team_id: i["team_id"],
-      key: i[data.KEY].id.toString(),
-    };
+  let [result] = await data.runQuery(query);
+
+  result = result.map((i) => {
+    return { ...i, key: i[data.KEY].id };
   });
-  return newResult;
+
+  return result;
 }
 
 export async function deleteSubscription(key: string): Promise<any> {
   await data.delete(data.key(["subscriptions", parseInt(key)]));
 }
 
+export async function subscriptionExists(
+  team_id: string,
+  event_key: string,
+  channel: string
+): Promise<boolean> {
+  const [resp] = await data.runQuery(
+    data
+      .createQuery("subscriptions")
+      .filter("team_id", team_id)
+      .filter("channel", channel)
+      .filter("event.key", event_key)
+  );
+
+  return resp.length > 0;
+}
+
+export async function getSubscription(key: string): Promise<SubscribedEvent> {
+  const [resp] = await data.get(data.key(["subscriptions", parseInt(key)]));
+
+  return { ...resp, key: resp[data.KEY].id };
+}
+
+// Installations
 export async function addInstallation(
   installation: Installation
 ): Promise<null> {
   await data.save({
-    key: data.key("users"),
-    data: {
-      team_id: installation.team.id,
-      installation: JSON.stringify(installation),
-    },
+    key: data.key(["users", installation.team.id]),
+    data: installation,
   });
   return;
 }
@@ -64,11 +87,8 @@ export async function addInstallation(
 export async function getInstallation(
   query: InstallationQuery
 ): Promise<Installation> {
-  const resp = await data.runQuery(
-    data.createQuery("users").filter("team_id", query.teamId)
-  );
-
-  return JSON.parse(resp[0][0].installation);
+  const [resp] = await data.get(data.key(["users", query.teamId]));
+  return resp;
 }
 
 export async function getAllInstallations(): Promise<Installation[]> {

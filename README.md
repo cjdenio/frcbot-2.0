@@ -11,7 +11,7 @@ This will eventually replace the current FRCBot, and Discord support will be add
 This is not a perfected process, but here goes:
 
 1. Clone the repository with `git clone https://github.com/deniosoftware/frcbot-2.0`
-2. Install [Docker](https://) and Docker Compose
+2. Install [Docker](https://docker.com) and Docker Compose
 3. In the `frcbot-2.0/` folder, run `yarn install`, then `docker-compose up`
 4. Now FRCBot is available at `localhost:3000`. An ngrok tunnel will be automatically setup, and you can view the dashboard at `localhost:3001`.
 5. Run `yarn docker-autosync`, which will continuously update the container when you make changes.

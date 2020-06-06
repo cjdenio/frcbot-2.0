@@ -1,17 +1,24 @@
 import { View } from "@slack/types";
+import { SubscribedEvent } from "../data";
 
-export function subscribeModal(_?: { channel?: string; event?: string }): View {
+export function subscribeModal(_?: {
+  channel?: string;
+  event?: string;
+  subscription?: SubscribedEvent;
+}): View {
+  const isOptions = _?.subscription ? true : false;
+
   return {
     type: "modal",
     title: {
       type: "plain_text",
-      text: "Subscribe to an event",
+      text: isOptions ? "Event Options" : "Subscribe to an event",
     },
     submit: {
       type: "plain_text",
       text: "Save",
     },
-    callback_id: "subscribe_event",
+    callback_id: isOptions ? "event_options" : "subscribe_event",
     blocks: [
       {
         type: "input",
@@ -135,7 +142,7 @@ export function subscribeModal(_?: { channel?: string; event?: string }): View {
         block_id: "additional_teams",
         element: {
           type: "plain_text_input",
-          action_id: "additional",
+          action_id: "additional_teams",
           placeholder: {
             type: "plain_text",
             text: "e.g. 6763, 1519, 254",

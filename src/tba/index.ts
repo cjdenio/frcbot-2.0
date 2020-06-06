@@ -23,7 +23,7 @@ export interface Event {
 }
 
 export interface EventBasic {
-  name: string;
+  name?: string;
   key: string;
 }
 

@@ -12,7 +12,7 @@ router.get("/slack/install", async (req, res) => {
   res.redirect(
     await installer.generateInstallUrl({
       scopes: ["chat:write", "chat:write.public", "commands"],
-      redirectUri: "https://87c199fc096f.ngrok.io/slack/oauth",
+      redirectUri: "https://b3b08d83c80e.ngrok.io/slack/oauth",
     })
   );
 });
