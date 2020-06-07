@@ -1,4 +1,4 @@
-import { View } from "@slack/types";
+import { View, SectionBlock } from "@slack/types";
 import { SubscribedEvent } from "../data";
 
 export function subscribeModal(_?: {
@@ -154,6 +154,18 @@ export function subscribeModal(_?: {
         },
         optional: true,
       },
+      ...(isOptions
+        ? []
+        : [
+            <SectionBlock>{
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text:
+                  ":warning: *Heads up!* This will post a message into the channel you've selected, just to let people know that it's subscribed!",
+              },
+            },
+          ]),
     ],
   };
 }

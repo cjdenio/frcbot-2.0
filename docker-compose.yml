@@ -8,6 +8,8 @@ services:
       DATASTORE_EMULATOR_HOST: datastore:8081
       DATASTORE_PROJECT_ID: the-blue-alliance-slack
     env_file: .env
+    volumes:
+      - ".:/usr/src/app"
   datastore:
     image: google/cloud-sdk
     command: gcloud beta emulators datastore start --host-port 0.0.0.0:8081

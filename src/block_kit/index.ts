@@ -1,5 +1,6 @@
 import { Team } from "../tba";
 import { Block, KnownBlock, View } from "@slack/types";
+import { SubscribedEvent } from "../data";
 
 export * from "./subscribeModal";
 export * from "./appHome";
@@ -55,6 +56,27 @@ export function help(): BlockList {
         type: "mrkdwn",
         text: "Help Text",
       },
+    },
+  ];
+}
+
+export function subscriptionAdded(subscription: SubscribedEvent): BlockList {
+  return [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `I've just subscribed <#${subscription.channel}> to the event <https://www.thebluealliance.com/event/${subscription.event.key}|${subscription.event.name}>! :tada:`,
+      },
+    },
+    {
+      type: "context",
+      elements: [
+        {
+          type: "mrkdwn",
+          text: `Set up by <@${subscription.user}>`,
+        },
+      ],
     },
   ];
 }

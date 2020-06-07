@@ -5,7 +5,7 @@ const installer = new InstallProvider({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   authVersion: "v2",
-  stateSecret: "MOO",
+  stateSecret: process.env.SLACK_STATE_SECRET,
   installationStore: InstallationStore,
 });
 

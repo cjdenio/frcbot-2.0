@@ -11,7 +11,7 @@ import { FRCBotReceiver } from "./FRCBotReceiver";
 
 import installer from "./installer/InstallProvider";
 
-import { BlockAction, ButtonAction, OverflowAction } from "@slack/bolt";
+import { BlockAction, OverflowAction } from "@slack/bolt";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
@@ -117,72 +117,78 @@ app.shortcut("subscribe_event", async ({ shortcut, ack, client }) => {
 });
 
 // Modal submission listeners
-app.view("subscribe_event", async ({ view, ack, payload, context, body }) => {
-  let event: Event;
+app.view(
+  "subscribe_event",
+  async ({ view, ack, payload, context, body, client }) => {
+    let event: Event;
 
-  try {
-    event = await tba.getEvent(view.state.values.event.event.value);
-  } catch (e) {
-    await ack({
-      response_action: "errors",
-      errors: {
-        event: "I couldn't find that event.",
+    try {
+      event = await tba.getEvent(view.state.values.event.event.value);
+    } catch (e) {
+      await ack({
+        response_action: "errors",
+        errors: {
+          event: "I couldn't find that event.",
+        },
+      });
+      return;
+    }
+
+    const subscription: data.SubscribedEvent = {
+      channel: view.state.values.channel.channel.selected_channel,
+      team_id: payload.team_id,
+      event: {
+        key: event.key,
+        name: event.name,
       },
+      additional_teams:
+        view.state.values.additional_teams?.additional_teams?.value?.split(
+          /\,\s*/g
+        ) || [],
+      type: view.state.values.type.type.selected_option.value,
+      notification_types: view.state.values.notification_types.notification_types.selected_options.map(
+        (i) => i.value
+      ),
+    };
+
+    if (
+      await data.subscriptionExists(
+        subscription.team_id,
+        subscription.event.key,
+        subscription.channel
+      )
+    ) {
+      await ack({
+        response_action: "errors",
+        errors: {
+          event: "You're already subscribed to that event.",
+        },
+      });
+      return;
+    }
+
+    await ack();
+
+    await data.addSubscription(subscription);
+    await client.chat.postMessage({
+      channel: subscription.channel,
+      blocks: bk.subscriptionAdded({ ...subscription, user: body.user.id }),
+      text: `This channel is now subscribed to ${subscription.event.name}!`,
     });
-    return;
+    await updateAppHome(context, body.user.id, body.team.id);
   }
-
-  const subscription: data.SubscribedEvent = {
-    channel: view.state.values.channel.channel.selected_channel,
-    team_id: payload.team_id,
-    event: {
-      key: event.key,
-      name: event.name,
-    },
-    additional_teams:
-      view.state.values.additional_teams?.additional_teams?.value?.split(
-        /\,\s*/g
-      ) || [],
-    type: view.state.values.type.type.selected_option.value,
-    notification_types: view.state.values.notification_types.notification_types.selected_options.map(
-      (i) => i.value
-    ),
-  };
-
-  if (
-    await data.subscriptionExists(
-      subscription.team_id,
-      subscription.event.key,
-      subscription.channel
-    )
-  ) {
-    await ack({
-      response_action: "errors",
-      errors: {
-        event: "You're already subscribed to that event.",
-      },
-    });
-    return;
-  }
-
-  await ack();
-
-  await data.addSubscription(subscription);
-  await updateAppHome(context, body.user.id, body.team.id);
-});
+);
 
 async function updateAppHome(
   context: Context,
   user_id: string,
   team_id: string
 ): Promise<any> {
-  console.log("Updating...");
   await app.client.views.publish({
     user_id: user_id,
     view: bk.appHome(await data.getSubscriptions(team_id)),
     token: context.botToken,
   });
-  console.log("Updated");
 }
 
 (async () => {

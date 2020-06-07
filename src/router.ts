@@ -1,6 +1,7 @@
 import { Router } from "express";
 import installer from "./installer/InstallProvider";
 import * as data from "./data";
+import * as ngrok from "./ngrok";
 
 const router = Router();
 
@@ -12,7 +13,10 @@ router.get("/slack/install", async (req, res) => {
   res.redirect(
     await installer.generateInstallUrl({
       scopes: ["chat:write", "chat:write.public", "commands"],
-      redirectUri: "https://b3b08d83c80e.ngrok.io/slack/oauth",
+      redirectUri:
+        process.env.NODE_ENV == "production"
+          ? "https://frcbot.deniosoftware.com/slack/oauth"
+          : `${await ngrok.getNgrokURL()}/slack/oauth`,
     })
   );
 });

@@ -15,6 +15,7 @@ export interface SubscribedEvent {
   type: "team" | "all";
   key?: string;
   notification_types: NotificationType[];
+  user?: string;
 }
 
 const data = new Datastore();
