@@ -49,10 +49,10 @@ router.get("/avatar/:number(\\d+)", async (req, res) => {
           .toBuffer()
       );
     } else {
-      throw new Error()
+      throw new Error();
     }
   } catch (e) {
-    res.send("Not found.")
+    res.send("Not found.");
   }
 });
 
