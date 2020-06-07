@@ -59,4 +59,23 @@ export class TBAClient {
 
     return resp.data;
   }
+
+  async getAvatar(team: number): Promise<Buffer | null> {
+    const resp = await axios.get(
+      `https://www.thebluealliance.com/api/v3/team/frc${team}/media/${new Date().getFullYear()}`,
+      {
+        headers: {
+          "X-TBA-Auth-Key": this.key,
+        },
+      }
+    );
+
+    const avatarObj = resp.data.find((i) => i.type == "avatar");
+
+    if (avatarObj) {
+      return Buffer.from(avatarObj.details.base64Image, "base64");
+    } else {
+      return null;
+    }
+  }
 }

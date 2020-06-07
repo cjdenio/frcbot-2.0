@@ -1,6 +1,6 @@
 {
   "name": "frcbot",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "FRC integration for Slack",
   "main": "dist/index.js",
   "author": "Caleb Denio",
@@ -10,7 +10,8 @@
     "@slack/bolt": "^2.1.1",
     "@slack/oauth": "^1.1.0",
     "axios": "^0.19.2",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "sharp": "^0.25.3"
   },
   "scripts": {
     "start": "node dist/index.js",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/express": "^4.17.6",
     "@types/node": "^14.0.9",
+    "@types/sharp": "^0.25.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
