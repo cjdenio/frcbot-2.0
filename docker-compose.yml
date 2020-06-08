@@ -1,4 +1,4 @@
-version: "3"
+version: "3.2"
 services:
   main:
     build: .
@@ -17,6 +17,10 @@ services:
       CLOUDSDK_CORE_PROJECT: the-blue-alliance-slack
     expose:
       - 8081
+    volumes:
+      - type: volume
+        source: datastore_volume
+        target: /root/.config/gcloud/emulators/datastore/WEB-INF/appengine-generated
   ngrok:
     image: wernight/ngrok
     env_file: .ngrok.env
@@ -31,3 +35,5 @@ services:
       DATASTORE_EMULATOR_HOST: datastore:8081
     ports:
       - "3002:3000"
+volumes:
+  datastore_volume:
