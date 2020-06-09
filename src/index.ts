@@ -12,6 +12,7 @@ import { FRCBotReceiver } from "./FRCBotReceiver";
 import installer from "./installer/InstallProvider";
 
 import { BlockAction, OverflowAction } from "@slack/bolt";
+import { getNgrokURL } from "./ngrok";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
@@ -40,7 +41,10 @@ app.command("/frc", async ({ payload, ack, client }) => {
 
       await ack({
         text: "",
-        blocks: bk.team(team),
+        blocks: bk.team(
+          team,
+          process.env.NODE_ENV == "production" ? null : await getNgrokURL()
+        ),
         response_type: "in_channel",
       });
       break;

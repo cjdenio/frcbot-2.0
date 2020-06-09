@@ -7,6 +7,8 @@ import sharp from "sharp";
 import * as data from "./data";
 import * as ngrok from "./ngrok";
 
+import * as path from "path";
+
 const router = Router();
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
@@ -52,7 +54,9 @@ router.get("/avatar/:number(\\d+)", async (req, res) => {
       throw new Error();
     }
   } catch (e) {
-    res.send("Not found.");
+    res
+      .contentType("png")
+      .sendFile(path.join(__dirname, "..", "assets", "img", "first.png"));
   }
 });
 

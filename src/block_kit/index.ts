@@ -7,7 +7,7 @@ export * from "./appHome";
 
 type BlockList = (Block | KnownBlock)[];
 
-export function team(team: Team): BlockList {
+export function team(team: Team, overrideImageHost?: string): BlockList {
   return [
     {
       type: "section",
@@ -17,7 +17,9 @@ export function team(team: Team): BlockList {
       },
       accessory: {
         type: "image",
-        image_url: `https://frcbot.deniosoftware.com/avatar/${team.team_number}`,
+        image_url: `${
+          overrideImageHost || "https://frcbot.deniosoftware.com"
+        }/avatar/${team.team_number}`,
         alt_text: "Team avatar",
       },
       fields: [
