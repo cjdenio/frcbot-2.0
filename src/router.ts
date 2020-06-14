@@ -19,7 +19,13 @@ router.get("/", (req, res) => {
 router.get("/slack/install", async (req, res) => {
   res.redirect(
     await installer.generateInstallUrl({
-      scopes: ["chat:write", "chat:write.public", "commands"],
+      scopes: [
+        "chat:write",
+        "chat:write.public",
+        "commands",
+        "links:read",
+        "links:write",
+      ],
       redirectUri:
         process.env.NODE_ENV == "production"
           ? "https://frcbot.deniosoftware.com/slack/oauth"

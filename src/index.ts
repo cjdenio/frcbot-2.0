@@ -13,6 +13,9 @@ import installer from "./installer/InstallProvider";
 
 import { BlockAction, OverflowAction } from "@slack/bolt";
 import { getNgrokURL } from "./ngrok";
+import { url } from "inspector";
+
+import * as pathToRegExp from "path-to-regexp";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
@@ -80,6 +83,39 @@ app.event("app_home_opened", async ({ context, body, event }) => {
   await updateAppHome(context, event.user, body.team_id);
 });
 
+app.event("link_shared", async ({ client, body, event }) => {
+  const link = event.links[0];
+
+  switch (link.domain) {
+    case "thebluealliance.com":
+      const path = new URL(link.url).pathname;
+
+      const teamMatch = pathToRegExp.match("/:n(\\d+)");
+      const teamMatchWithBase = pathToRegExp.match("/team/:n(\\d+)");
+
+      const teamMatches = teamMatch(path) || teamMatchWithBase(path);
+
+      if (teamMatches) {
+        let team: Team;
+        try {
+          team = await tba.getTeam(parseInt(teamMatches.params["n"]));
+        } catch (e) {
+          return;
+        }
+        client.chat.unfurl({
+          channel: event.channel,
+          ts: event.message_ts,
+          unfurls: {
+            [link.url]: {
+              blocks: bk.team(team),
+            },
+          },
+        });
+      }
+      break;
+  }
+});
+
 // Block action listeners
 app.action("subscribe_event", async ({ ack, body, client }) => {
   await ack();
@@ -109,6 +145,11 @@ app.action(/^event_options:(.+)$/, async ({ ack, body, client, context }) => {
         view: bk.subscribeModal({ subscription }),
       });
   }
+});
+
+app.action(/^view_on_tba:(.+)$/, async ({ ack }) => {
+  // Gotta acknowledge those "View on TBA" button presses
+  await ack();
 });
 
 // Shortcut listeners

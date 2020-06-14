@@ -25,11 +25,11 @@ export function team(team: Team, overrideImageHost?: string): BlockList {
       fields: [
         {
           type: "mrkdwn",
-          text: `*Rookie Year*\n${team.rookie_year}`,
+          text: `*Rookie Year* :calendar:\n${team.rookie_year}`,
         },
         {
           type: "mrkdwn",
-          text: `*Hometown*\n${team.city}, ${team.state_prov}, ${team.country}`,
+          text: `*Hometown* :house:\n${team.city}, ${team.state_prov}, ${team.country}`,
         },
       ],
     },
@@ -44,6 +44,7 @@ export function team(team: Team, overrideImageHost?: string): BlockList {
             text: "View on TBA :arrow_upper_right:",
           },
           url: `https://www.thebluealliance.com/team/${team.team_number}`,
+          action_id: `view_on_tba:${team.team_number}`,
         },
       ],
     },
