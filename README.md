@@ -6,6 +6,8 @@ This will eventually replace the current FRCBot, and Discord support will be add
 
 **Contributions welcome.** Shoot me an email at caleb@deniosoftware.com if you're interested in helping out.
 
+## [To-Do List](https://github.com/deniosoftware/frcbot-2.0/projects/1)
+
 ## Getting set up for development
 
 This is not a perfected process, but here goes:
