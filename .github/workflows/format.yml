@@ -1,4 +1,4 @@
-name: Check Format
+name: Format
 on: push
 jobs:
   format:
