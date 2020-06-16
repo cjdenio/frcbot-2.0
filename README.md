@@ -1,5 +1,8 @@
 # FRCBot 2.0
 
+![Build](https://github.com/deniosoftware/frcbot-2.0/workflows/Build/badge.svg)
+![Format](https://github.com/deniosoftware/frcbot-2.0/workflows/Format/badge.svg)
+
 A complete rewrite of [FRCBot](https://github.com/deniosoftware/frcbot), written in TypeScript using [Bolt](https://slack.dev/bolt-js).
 
 This will eventually replace the current FRCBot, and Discord support will be added. Yay!
