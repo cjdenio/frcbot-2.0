@@ -1,4 +1,5 @@
 import axios from "axios";
+import { createRequireFromPath } from "module";
 
 export interface Team {
   team_number: number;
@@ -20,6 +21,11 @@ export interface Event {
   end_date: string;
   year: number;
   event_type_string: string;
+  district: District;
+}
+
+export interface District {
+  display_name: string;
 }
 
 export interface EventBasic {
@@ -57,7 +63,7 @@ export class TBAClient {
       }
     );
 
-    return resp.data;
+    return { ...resp.data, name: `${resp.data.name} ${resp.data.year}` };
   }
 
   async getAvatar(team: number): Promise<Buffer | null> {

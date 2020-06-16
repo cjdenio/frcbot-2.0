@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import installer from "./installer/InstallProvider";
 import { TBAClient, Team, Event } from "./tba";
 
@@ -11,6 +11,8 @@ import * as path from "path";
 
 const router = Router();
 const tba = new TBAClient(process.env.TBA_API_KEY);
+
+router.use(express.static(path.join(__dirname, "..", "assets")));
 
 router.get("/", (req, res) => {
   res.send("<h1>FRCBot 2.0</h1>");

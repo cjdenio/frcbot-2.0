@@ -30,7 +30,9 @@ export function subscribeModal(_?: {
             type: "plain_text",
             text: "e.g. 2020mabos",
           },
-          ...(_?.event ? { initial_value: _.event } : {}),
+          ...(_?.event || _?.subscription?.event.key
+            ? { initial_value: _.event || _.subscription.event.key }
+            : {}),
         },
         label: {
           type: "plain_text",
@@ -47,7 +49,9 @@ export function subscribeModal(_?: {
             type: "plain_text",
             text: "Select one...",
           },
-          ...(_?.channel ? { initial_channel: _.channel } : {}),
+          ...(_?.channel || _?.subscription?.channel
+            ? { initial_channel: _.channel || _.subscription.channel }
+            : {}),
         },
         label: {
           type: "plain_text",

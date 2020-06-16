@@ -1,6 +1,8 @@
-import { Team } from "../tba";
+import { Team, Event } from "../tba";
 import { Block, KnownBlock, View } from "@slack/types";
 import { SubscribedEvent } from "../data";
+
+import { DateTime } from "luxon";
 
 export * from "./subscribeModal";
 export * from "./appHome";
@@ -51,6 +53,59 @@ export function team(team: Team, overrideImageHost?: string): BlockList {
   ];
 }
 
+export function event(event: Event): BlockList {
+  return [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*${event.name}*`,
+      },
+      accessory: {
+        type: "image",
+        image_url: "http://frcbot.deniosoftware.com/img/first.png",
+        alt_text: "FIRST Logo",
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `*Date :calendar:*\n${DateTime.fromISO(
+            event.start_date
+          ).toLocaleString(DateTime.DATE_FULL)}`,
+        },
+        {
+          type: "mrkdwn",
+          text: `*District :pushpin:*\n${event.district.display_name}`,
+        },
+      ],
+    },
+    {
+      type: "actions",
+      elements: [
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "View on TBA :arrow_upper_right:",
+            emoji: true,
+          },
+          url: `https://www.thebluealliance.com/event/${event.key}`,
+          action_id: `view_on_tba:${event.key}`,
+        },
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            emoji: true,
+            text: "Subscribe to event :eyes:",
+          },
+          action_id: `subscribe_event:${event.key}`,
+        },
+      ],
+    },
+  ];
+}
+
 export function help(): BlockList {
   return [
     {
@@ -63,13 +118,17 @@ export function help(): BlockList {
   ];
 }
 
-export function subscriptionAdded(subscription: SubscribedEvent): BlockList {
+export function subscriptionAdded(
+  subscription: SubscribedEvent,
+  team_id: string,
+  app_id: string
+): BlockList {
   return [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `I've just subscribed <#${subscription.channel}> to the event <https://www.thebluealliance.com/event/${subscription.event.key}|${subscription.event.name}>! :tada:`,
+        text: `I've just subscribed <#${subscription.channel}> to the event *<https://www.thebluealliance.com/event/${subscription.event.key}|${subscription.event.name}>*! :tada:`,
       },
     },
     {
@@ -77,7 +136,7 @@ export function subscriptionAdded(subscription: SubscribedEvent): BlockList {
       elements: [
         {
           type: "mrkdwn",
-          text: `Set up by <@${subscription.user}>`,
+          text: `Set up by <@${subscription.user}> \u00B7 Manage your subscriptions <slack://app?team=${team_id}&id=${app_id}|here>`,
         },
       ],
     },

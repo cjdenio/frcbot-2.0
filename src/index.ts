@@ -13,9 +13,6 @@ import installer from "./installer/InstallProvider";
 
 import { BlockAction, OverflowAction } from "@slack/bolt";
 import { getNgrokURL } from "./ngrok";
-import { url } from "inspector";
-
-import * as pathToRegExp from "path-to-regexp";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
@@ -90,15 +87,13 @@ app.event("link_shared", async ({ client, body, event }) => {
     case "thebluealliance.com":
       const path = new URL(link.url).pathname;
 
-      const teamMatch = pathToRegExp.match("/:n(\\d+)");
-      const teamMatchWithBase = pathToRegExp.match("/team/:n(\\d+)");
+      const teamMatch = path.match(/^\/(?:team\/)?(\d+)(?:\/|$)/i);
+      const eventMatch = path.match(/^\/(?:event\/)?(\d{4}\w+)(?:\/|$)/i);
 
-      const teamMatches = teamMatch(path) || teamMatchWithBase(path);
-
-      if (teamMatches) {
+      if (teamMatch) {
         let team: Team;
         try {
-          team = await tba.getTeam(parseInt(teamMatches.params["n"]));
+          team = await tba.getTeam(parseInt(teamMatch[1]));
         } catch (e) {
           return;
         }
@@ -108,6 +103,22 @@ app.event("link_shared", async ({ client, body, event }) => {
           unfurls: {
             [link.url]: {
               blocks: bk.team(team),
+            },
+          },
+        });
+      } else if (eventMatch) {
+        let frcEvent: Event;
+        try {
+          frcEvent = await tba.getEvent(eventMatch[1]);
+        } catch (e) {
+          return;
+        }
+        client.chat.unfurl({
+          channel: event.channel,
+          ts: event.message_ts,
+          unfurls: {
+            [link.url]: {
+              blocks: bk.event(frcEvent),
             },
           },
         });
@@ -125,10 +136,22 @@ app.action("subscribe_event", async ({ ack, body, client }) => {
   });
 });
 
-app.action(/^event_options:(.+)$/, async ({ ack, body, client, context }) => {
+app.action(/^subscribe_event:(\w+)$/, async ({ ack, body, client }) => {
+  await ack();
+  await client.views.open({
+    trigger_id: (<BlockAction>body).trigger_id,
+    view: bk.subscribeModal({
+      event: (<BlockAction>body).actions[0].action_id.match(
+        /^subscribe_event:(\w+)$/
+      )[1],
+    }),
+  });
+});
+
+app.action(/^event_options:(\w+)$/, async ({ ack, body, client, context }) => {
   await ack();
   const key = (<BlockAction>body).actions[0].action_id.match(
-    /^event_options:(.+)$/
+    /^event_options:(\w+)$/
   )[1];
 
   switch (
@@ -215,14 +238,25 @@ app.view(
     await ack();
 
     await data.addSubscription(subscription);
+
+    // TODO: dynamic app ID
     await client.chat.postMessage({
       channel: subscription.channel,
-      blocks: bk.subscriptionAdded({ ...subscription, user: body.user.id }),
+      blocks: bk.subscriptionAdded(
+        { ...subscription, user: body.user.id },
+        payload.team_id,
+        "A014MDFDM7C"
+      ),
       text: `This channel is now subscribed to ${subscription.event.name}!`,
     });
     await updateAppHome(context, body.user.id, body.team.id);
   }
 );
+
+app.view("event_options", async ({ ack }) => {
+  await ack();
+  console.log("Event options submitted");
+});
 
 async function updateAppHome(
   context: Context,
