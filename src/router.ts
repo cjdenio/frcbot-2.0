@@ -27,6 +27,7 @@ router.get("/slack/install", async (req, res) => {
         "commands",
         "links:read",
         "links:write",
+        "im:history",
       ],
       redirectUri:
         process.env.NODE_ENV == "production"

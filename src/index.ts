@@ -1,4 +1,4 @@
-import { App } from "@slack/bolt";
+import { App, subtype } from "@slack/bolt";
 import { TBAClient, Team, Event } from "./tba";
 
 import * as bk from "./block_kit";
@@ -78,6 +78,14 @@ app.command("/frc", async ({ payload, ack, client }) => {
 // Event listeners
 app.event("app_home_opened", async ({ context, body, event }) => {
   await updateAppHome(context, event.user, body.team_id);
+});
+
+app.message(async ({ message, client, event }) => {
+  client.reactions.add({
+    channel: event.channel,
+    name: "eyes",
+    timestamp: message.ts,
+  });
 });
 
 app.event("link_shared", async ({ client, body, event }) => {
