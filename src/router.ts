@@ -1,6 +1,7 @@
-import express, { Router } from "express";
+import express, { Router, Request } from "express";
 import installer from "./installer/InstallProvider";
 import { TBAClient, Team, Event } from "./tba";
+import { handleTBAWebhook, verifyTBAWebhook } from "./tba/webhook";
 
 import sharp from "sharp";
 
@@ -68,5 +69,16 @@ router.get("/avatar/:number(\\d+)", async (req, res) => {
       .sendFile(path.join(__dirname, "..", "assets", "img", "first.png"));
   }
 });
+
+router.post(
+  "/tba/webhook",
+  express.json({
+    verify: (req, res, buf) => {
+      (req as Request & { rawBody: Buffer }).rawBody = buf;
+    },
+  }),
+  verifyTBAWebhook,
+  handleTBAWebhook
+);
 
 export default router;

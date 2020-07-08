@@ -110,3 +110,7 @@ export async function updateSubscription(
     data: event,
   });
 }
+
+export async function getSubscriptionsByEventInfo(event_key: string): Promise<SubscribedEvent[]> {
+  return null as SubscribedEvent[]
+}

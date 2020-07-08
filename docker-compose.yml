@@ -17,6 +17,8 @@ services:
       CLOUDSDK_CORE_PROJECT: the-blue-alliance-slack
     expose:
       - 8081
+    ports:
+      - "3003:8081"
     volumes:
       - "datastore_volume:/root/.config/gcloud/emulators/datastore/WEB-INF/appengine-generated"
   ngrok:
