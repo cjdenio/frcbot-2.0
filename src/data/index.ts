@@ -1,6 +1,7 @@
 import { Datastore } from "@google-cloud/datastore";
 import { Event, EventBasic } from "../tba";
 import { Installation, InstallationQuery } from "@slack/oauth";
+import { parse } from "path";
 
 export type NotificationType =
   | "match_score"
@@ -23,7 +24,7 @@ const data = new Datastore();
 // Subscriptions
 export async function addSubscription(
   subscription: SubscribedEvent
-): Promise<any> {
+): Promise<void> {
   await data.save({
     key: data.key(["subscriptions"]),
     data: subscription,
@@ -77,7 +78,7 @@ export async function getSubscription(key: string): Promise<SubscribedEvent> {
 // Installations
 export async function addInstallation(
   installation: Installation
-): Promise<null> {
+): Promise<void> {
   await data.save({
     key: data.key(["users", installation.team.id]),
     data: installation,
@@ -96,4 +97,16 @@ export async function getAllInstallations(): Promise<Installation[]> {
   const resp = await data.runQuery(data.createQuery("users"));
 
   return resp[0];
+}
+
+export async function updateSubscription(
+  event: SubscribedEvent,
+  key?: string
+): Promise<void> {
+  key = event.key || key;
+  delete event.key;
+  await data.update({
+    key: data.key(["subscriptions", parseInt(key)]),
+    data: event,
+  });
 }

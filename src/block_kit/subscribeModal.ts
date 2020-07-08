@@ -1,5 +1,5 @@
-import { View, SectionBlock } from "@slack/types";
-import { SubscribedEvent } from "../data";
+import { View, SectionBlock, Option } from "@slack/types";
+import { SubscribedEvent, NotificationType } from "../data";
 
 export function subscribeModal(_?: {
   channel?: string;
@@ -7,6 +7,42 @@ export function subscribeModal(_?: {
   subscription?: SubscribedEvent;
 }): View {
   const isOptions = _?.subscription ? true : false;
+
+  let notificationTypesInitialOptions = [
+    {
+      text: {
+        type: "plain_text",
+        text: "Match Score",
+      },
+      value: "match_score",
+    },
+  ];
+
+  if (isOptions) {
+    notificationTypesInitialOptions = [];
+    notificationTypesInitialOptions = _.subscription.notification_types.map(
+      (i: NotificationType) => {
+        let text: string;
+        switch (i) {
+          case "event_schedule":
+            text = "Event Schedule";
+            break;
+          case "match_score":
+            text = "Match Score";
+            break;
+          case "upcoming_match":
+            text = "Upcoming Match";
+        }
+        return {
+          text: {
+            type: "plain_text",
+            text,
+          },
+          value: i,
+        };
+      }
+    );
+  }
 
   return {
     type: "modal",
@@ -18,7 +54,9 @@ export function subscribeModal(_?: {
       type: "plain_text",
       text: "Save",
     },
-    callback_id: isOptions ? "event_options" : "subscribe_event",
+    callback_id: isOptions
+      ? `event_options:${_.subscription.key}`
+      : "subscribe_event",
     blocks: [
       {
         type: "input",
@@ -91,15 +129,7 @@ export function subscribeModal(_?: {
               value: "event_schedule",
             },
           ],
-          initial_options: [
-            {
-              text: {
-                type: "plain_text",
-                text: "Match Score",
-              },
-              value: "match_score",
-            },
-          ],
+          initial_options: notificationTypesInitialOptions as Option[],
         },
         label: {
           type: "plain_text",
@@ -128,13 +158,22 @@ export function subscribeModal(_?: {
               value: "team",
             },
           ],
-          initial_option: {
-            text: {
-              type: "plain_text",
-              text: "All matches",
-            },
-            value: "all",
-          },
+          initial_option:
+            !isOptions || _.subscription.type == "all"
+              ? {
+                  text: {
+                    type: "plain_text",
+                    text: "All matches",
+                  },
+                  value: "all",
+                }
+              : {
+                  text: {
+                    type: "plain_text",
+                    text: "Just your team + additional teams",
+                  },
+                  value: "team",
+                },
         },
         label: {
           type: "plain_text",
@@ -151,6 +190,9 @@ export function subscribeModal(_?: {
             type: "plain_text",
             text: "e.g. 6763, 1519, 254",
           },
+          ...(isOptions
+            ? { initial_value: _.subscription.additional_teams.join(", ") }
+            : {}),
         },
         label: {
           type: "plain_text",
