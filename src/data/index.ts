@@ -111,6 +111,8 @@ export async function updateSubscription(
   });
 }
 
-export async function getSubscriptionsByEventInfo(event_key: string): Promise<SubscribedEvent[]> {
-  return null as SubscribedEvent[]
+export async function getSubscriptionsByEventInfo(
+  event_key: string
+): Promise<SubscribedEvent[]> {
+  return null as SubscribedEvent[];
 }
