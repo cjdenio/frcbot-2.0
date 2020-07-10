@@ -113,7 +113,10 @@ export async function handleTBAWebhook(req: Request, res: Response) {
           slack.chat.postMessage({
             text: "",
             channel: subscription.channel,
-            blocks: match_score({ event_name: "", ...match }),
+            blocks: match_score({
+              event_name: subscription.event.name,
+              ...match,
+            }),
             token,
           });
         } catch (e) {
