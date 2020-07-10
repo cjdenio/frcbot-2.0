@@ -6,6 +6,8 @@ import installer from "./installer/InstallProvider";
 
 import { initCommands, initEvents, initActions, initViews } from "./features";
 
+import "./discord";
+
 const app = new App({
   receiver: new FRCBotReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET,

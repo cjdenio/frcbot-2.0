@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
   res.send("<h1>FRCBot 2.0</h1>");
 });
 
-router.get("/slack/install", async (req, res) => {
+router.get("/install/slack", async (req, res) => {
   res.redirect(
     await installer.generateInstallUrl({
       scopes: [
@@ -40,6 +40,12 @@ router.get("/slack/install", async (req, res) => {
 
 router.get("/slack/oauth", async (req, res) => {
   installer.handleCallback(req, res);
+});
+
+router.get("/install/discord", async (req, res) => {
+  res.redirect(
+    `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&scope=bot&permissions=2048`
+  );
 });
 
 router.get("/avatar/:number(\\d+)", async (req, res) => {

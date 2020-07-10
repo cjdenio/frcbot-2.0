@@ -1,5 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { createHmac, timingSafeEqual } from "crypto";
+import { WebClient } from "@slack/web-api";
+
+import * as data from "../data";
+import { deFRC } from "../util";
+import installer from "../installer/InstallProvider";
+
+import { match_score } from "../block_kit";
+
+import { CompLevel, Match, TBAClient } from "./index";
 
 export interface WebhookPayload {
   message_type: "verification" | "upcoming_match" | "match_score";
@@ -13,7 +22,7 @@ export interface ValidationEvent {
 export interface MatchScoreEvent {
   event_name: string;
   match: {
-    comp_level: "f" | "qf" | "sf" | "qm";
+    comp_level: CompLevel;
     match_number: number;
     videos: any[];
     time_string: string;
@@ -52,20 +61,65 @@ export function verifyTBAWebhook(
   next();
 }
 
-export function handleTBAWebhook(req: Request, res: Response) {
+export async function handleTBAWebhook(req: Request, res: Response) {
+  const slack = new WebClient();
+  const tba = new TBAClient(process.env.TBA_API_KEY);
+
   res.end();
 
   const payload: WebhookPayload = req.body;
-  let { message_type: type, message_data: data } = payload;
+  let { message_type: type, message_data: eventData } = payload;
 
   switch (type) {
     case "verification":
-      data = data as ValidationEvent;
-      console.log(`TBA webhook verification code: ${data.verification_key}`);
+      eventData = eventData as ValidationEvent;
+      console.log(
+        `TBA webhook verification code: ${eventData.verification_key}`
+      );
       break;
     case "match_score":
-      data = data as MatchScoreEvent;
-      console.log("Match score: " + data.match.event_key);
+      eventData = eventData as MatchScoreEvent;
+
+      let subscriptions = await data.getSubscriptionsByQuery(
+        eventData.match.event_key,
+        "match_score"
+      );
+
+      const relevantTeams = [
+        ...(eventData as MatchScoreEvent).match.alliances.red.teams.map(deFRC),
+        ...(eventData as MatchScoreEvent).match.alliances.blue.teams.map(deFRC),
+      ];
+
+      subscriptions = subscriptions.filter((v) => {
+        return (
+          v.type == "all" ||
+          v.additional_teams.some((i) => relevantTeams.includes(i))
+        );
+      });
+
+      let match: Match;
+      try {
+        match = await tba.getMatch(eventData.match.key);
+      } catch (e) {
+        console.log(e);
+      }
+
+      subscriptions.forEach(async (subscription) => {
+        let token = (
+          await installer.authorize({ teamId: subscription.team_id })
+        ).botToken;
+
+        try {
+          slack.chat.postMessage({
+            text: "",
+            channel: subscription.channel,
+            blocks: match_score({ event_name: "", ...match }),
+            token,
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      });
       break;
   }
 }

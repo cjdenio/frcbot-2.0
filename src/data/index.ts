@@ -2,6 +2,7 @@ import { Datastore } from "@google-cloud/datastore";
 import { Event, EventBasic } from "../tba";
 import { Installation, InstallationQuery } from "@slack/oauth";
 import { parse } from "path";
+import { eventNames } from "process";
 
 export type NotificationType =
   | "match_score"
@@ -111,8 +112,14 @@ export async function updateSubscription(
   });
 }
 
-export async function getSubscriptionsByEventInfo(
-  event_key: string
+export async function getSubscriptionsByQuery(
+  event_key: string,
+  notification_type: NotificationType
 ): Promise<SubscribedEvent[]> {
-  return null as SubscribedEvent[];
+  let query = data
+    .createQuery("subscriptions")
+    .filter("event.key", "=", event_key)
+    .filter("notification_types", "=", notification_type);
+  let [entities] = await data.runQuery(query);
+  return entities;
 }

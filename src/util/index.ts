@@ -11,3 +11,7 @@ export function parseSlashCommand(
     args: split,
   };
 }
+
+export function deFRC(input: string): string {
+  return input.replace(/^frc/i, "");
+}

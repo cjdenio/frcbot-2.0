@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 
 export * from "./subscribeModal";
 export * from "./appHome";
+export * from "./notifications";
 
 type BlockList = (Block | KnownBlock)[];
 
