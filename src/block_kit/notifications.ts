@@ -31,7 +31,7 @@ export function match_score(
         {
           type: "mrkdwn",
           text:
-            "<https://github.com/deniosoftware/frcbot-2.0|Click here> to manage your subscriptions or unsusbcribe from future notifications.",
+            'Click "FRCBot" in the Slack sidebar to manage your subscriptions or unsusbcribe from future notifications.',
         },
       ],
     },
