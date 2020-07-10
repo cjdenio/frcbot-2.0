@@ -6,7 +6,7 @@ import * as data from "../data";
 import { deFRC } from "../util";
 import installer from "../installer/InstallProvider";
 
-import { match_score } from "../block_kit";
+import { match_score, upcoming_match } from "../block_kit";
 
 import { CompLevel, Match, TBAClient } from "./index";
 
@@ -149,24 +149,24 @@ export async function handleTBAWebhook(req: Request, res: Response) {
         v.additional_teams.some((i) => relevantTeams.includes(i))
       );
     });
-    console.log(subscriptions.length);
-    // subscriptions.forEach(async (subscription) => {
-    //   let token = (await installer.authorize({ teamId: subscription.team_id }))
-    //     .botToken;
+    subscriptions.forEach(async (subscription) => {
+      let token = (await installer.authorize({ teamId: subscription.team_id }))
+        .botToken;
 
-    //   try {
-    //     slack.chat.postMessage({
-    //       text: "",
-    //       channel: subscription.channel,
-    //       blocks: match_score({
-    //         event_name: subscription.event.name,
-    //         ...match,
-    //       }),
-    //       token,
-    //     });
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    // });
+      try {
+        slack.chat.postMessage({
+          text: "",
+          channel: subscription.channel,
+          blocks: upcoming_match({
+            event_name: subscription.event.name,
+            scheduled_start: (eventData as UpcomingMatchEvent).scheduled_time,
+            ...match,
+          }),
+          token,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    });
   }
 }

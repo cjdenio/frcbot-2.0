@@ -37,3 +37,34 @@ export function match_score(
     },
   ];
 }
+
+export function upcoming_match(
+  match: Match & { event_name: string; scheduled_start: number }
+): BlockList {
+  return [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `There's an upcoming match in <https://www.thebluealliance.com/event/${match.event_key}|*${match.event_name}*>:\n<https://www.thebluealliance.com/match/${match.key}|*${match.name}*>`,
+      },
+    },
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        // prettier-ignore
+        text: `:red_circle: *Teams*: ${match.alliances.red.team_keys.map(deFRC).join(", ")}\n:large_blue_circle: *Teams*: ${match.alliances.blue.team_keys.map(deFRC).join(", ")}`
+      },
+    },
+    {
+      type: "context",
+      elements: [
+        {
+          type: "mrkdwn",
+          text: `Scheduled to be played at ${match.scheduled_start}`,
+        },
+      ],
+    },
+  ];
+}
