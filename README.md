@@ -31,11 +31,14 @@ SLACK_CLIENT_ID=not_so_secret_code
 SLACK_CLIENT_SECRET=pretty_secret_code
 SLACK_STATE_SECRET=random_string_for_security
 TBA_API_KEY=moderately_secret_code
+TBA_WEBHOOK_SECRET=
+DISCORD_CLIENT_ID=
+DISCORD_TOKEN=
 ```
 
 To configure the [ngrok](https://ngrok.com) tunnel (e.g. get a custom subdomain), create a `.ngrok.env` file with config like so:
 
-Check out all the possible ngrok config vars [here](https://github.com/wernight/docker-ngrok/#environment-variables).
+Check out all the possible ngrok config vars [here](https://github.com/wernight/docker-ngrok#environment-variables).
 
 ```
 NGROK_AUTH=your_auth_key
@@ -46,8 +49,9 @@ NGROK_SUBDOMAIN=subdomain
 
 ### Ports
 
-`http://localhost:3000` is your FRCBot instance.
-
-`http://localhost:3001` is the ngrok dashboard.
-
-`http://localhost:3002` is a Datastore viewer.
+| URL                     | Description                                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `http://localhost:3000` | Your FRCBot instance                                                                                              |
+| `http://localhost:3001` | The ngrok dashboard                                                                                               |
+| `http://localhost:3002` | The Datastore viewer                                                                                              |
+| `http://localhost:3003` | The raw Datastore API is exposed here. [[Reference](https://cloud.google.com/datastore/docs/reference/data/rest)] |
