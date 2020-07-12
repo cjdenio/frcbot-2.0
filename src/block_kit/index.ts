@@ -169,6 +169,16 @@ export function setTeamNumberModal(): View {
           text: "Team Number",
         },
       },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text:
+              "Type `/frc unsetteam` in any channel to remove your team number.",
+          },
+        ],
+      },
     ],
   };
 }
