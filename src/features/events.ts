@@ -2,16 +2,14 @@ import { App } from "@slack/bolt";
 import { TBAClient, Team, Event } from "../tba";
 import * as bk from "../block_kit";
 import * as data from "../data";
+import { updateAppHome } from "../util/slackhelpers";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
 export function initEvents(app: App) {
   // Event listeners
-  app.event("app_home_opened", async ({ client, body, event }) => {
-    await client.views.publish({
-      user_id: event.user,
-      view: bk.appHome(await data.getSubscriptions(body.team_id)),
-    });
+  app.event("app_home_opened", async ({ client, body, event, context }) => {
+    await updateAppHome(event.user, body.team_id);
   });
 
   app.event("link_shared", async ({ client, body, event }) => {

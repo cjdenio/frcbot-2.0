@@ -143,3 +143,32 @@ export function subscriptionAdded(
     },
   ];
 }
+
+export function setTeamNumberModal(): View {
+  return {
+    type: "modal",
+    callback_id: "set_team_number",
+    submit: {
+      type: "plain_text",
+      text: "Save",
+    },
+    title: {
+      type: "plain_text",
+      text: "Set your team number",
+    },
+    blocks: [
+      {
+        type: "input",
+        block_id: "team_number",
+        element: {
+          type: "plain_text_input",
+          action_id: "team_number",
+        },
+        label: {
+          type: "plain_text",
+          text: "Team Number",
+        },
+      },
+    ],
+  };
+}

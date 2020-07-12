@@ -3,6 +3,7 @@ import { Event, EventBasic } from "../tba";
 import { Installation, InstallationQuery } from "@slack/oauth";
 import { parse } from "path";
 import { eventNames } from "process";
+import installer from "../installer/InstallProvider";
 
 export type NotificationType =
   | "match_score"
@@ -89,7 +90,7 @@ export async function addInstallation(
 
 export async function getInstallation(
   query: InstallationQuery
-): Promise<Installation> {
+): Promise<Installation & { team_number?: number }> {
   const [resp] = await data.get(data.key(["users", query.teamId]));
   return resp;
 }
@@ -123,3 +124,14 @@ export async function getSubscriptionsByQuery(
   let [entities] = await data.runQuery(query);
   return entities;
 }
+
+export async function setTeamNumber(
+  team_id: string,
+  team_number: number
+): Promise<void> {
+  let [installation] = await data.get(data.key(["users", team_id]));
+  installation.team_number = team_number;
+  await data.save(installation);
+}
+
+//export async function getTeamNumber(team_id: string): Promise<number> {}

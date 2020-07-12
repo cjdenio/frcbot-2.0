@@ -2,11 +2,30 @@ import { App, BlockAction, OverflowAction } from "@slack/bolt";
 import * as bk from "../block_kit";
 import * as data from "../data";
 import { Event, TBAClient } from "../tba";
+import { updateAppHome } from "../util/slackhelpers";
 
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
 export function initViews(app: App) {
   // Modal submission listeners
+  app.view("set_team_number", async ({ view, ack, body, context }) => {
+    const value = view.state.values.team_number.team_number.value;
+
+    if (!/^\d+$/.test(value)) {
+      await ack({
+        response_action: "errors",
+        errors: {
+          team_number: "Please enter a number",
+        },
+      });
+      return;
+    }
+
+    await ack();
+    await data.setTeamNumber(body.team.id, value);
+    await updateAppHome(body.user.id, body.team.id);
+  });
+
   app.view("subscribe_event", async (d) => {
     await upsertSubscription(d, "insert");
   });
@@ -89,9 +108,6 @@ export function initViews(app: App) {
       );
     }
 
-    await client.views.publish({
-      user_id: body.user.id,
-      view: bk.appHome(await data.getSubscriptions(body.team.id)),
-    });
+    await updateAppHome(body.user.id, body.team.id);
   }
 }

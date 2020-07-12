@@ -4,6 +4,8 @@ import * as util from "../util";
 import { Team, TBAClient } from "../tba";
 import * as bk from "../block_kit";
 
+import * as data from "../data";
+
 const tba = new TBAClient(process.env.TBA_API_KEY);
 
 export function initCommands(app: App) {
@@ -44,6 +46,19 @@ export function initCommands(app: App) {
               : {}),
           }),
         });
+        break;
+      case "setteam":
+        if (
+          parsed.args[0] == "" ||
+          !parsed.args[0] ||
+          !/^\d+$/.test(parsed.args[0])
+        ) {
+          await ack("Hmm... please run this command like `/frc setteam 254`.");
+        }
+        await data.setTeamNumber(payload.team_id, parseInt(parsed.args[0]));
+        await ack(
+          `I've successfully set your team number to *${parsed.args[0]}*!`
+        );
         break;
       case "help":
       case null:

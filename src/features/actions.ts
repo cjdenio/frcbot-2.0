@@ -1,6 +1,7 @@
 import { App, BlockAction, OverflowAction } from "@slack/bolt";
 import * as bk from "../block_kit";
 import * as data from "../data";
+import { updateAppHome } from "../util/slackhelpers";
 
 export function initActions(app: App) {
   // Block action listeners
@@ -38,10 +39,7 @@ export function initActions(app: App) {
       ) {
         case "delete":
           await data.deleteSubscription(key);
-          await client.views.publish({
-            user_id: body.user.id,
-            view: bk.appHome(await data.getSubscriptions(body.team.id)),
-          });
+          await updateAppHome(body.user.id, body.team.id);
           break;
         case "options":
           const subscription = await data.getSubscription(key);
@@ -50,6 +48,17 @@ export function initActions(app: App) {
             view: bk.subscribeModal({ subscription }),
           });
       }
+    }
+  );
+
+  app.action(
+    "set_team_number",
+    async ({ ack, client, body, action, payload }) => {
+      await ack();
+      client.views.open({
+        view: bk.setTeamNumberModal(),
+        trigger_id: (body as BlockAction).trigger_id,
+      });
     }
   );
 
