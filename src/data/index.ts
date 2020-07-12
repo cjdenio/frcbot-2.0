@@ -130,7 +130,12 @@ export async function setTeamNumber(
   team_number: number
 ): Promise<void> {
   let [installation] = await data.get(data.key(["users", team_id]));
-  installation.team_number = team_number;
+
+  if (team_number) {
+    installation.team_number = team_number;
+  } else {
+    delete installation.team_number;
+  }
   await data.save(installation);
 }
 

@@ -60,6 +60,10 @@ export function initCommands(app: App) {
           `I've successfully set your team number to *${parsed.args[0]}*!`
         );
         break;
+      case "unsetteam":
+        await data.setTeamNumber(payload.team_id, null);
+        await ack("Yep");
+        break;
       case "help":
       case null:
       case "":
