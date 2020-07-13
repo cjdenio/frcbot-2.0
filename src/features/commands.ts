@@ -62,7 +62,7 @@ export function initCommands(app: App) {
         break;
       case "unsetteam":
         await data.setTeamNumber(payload.team_id, null);
-        await ack("Yep");
+        await ack("I've successfully unset your team number.");
         break;
       case "help":
       case null:
