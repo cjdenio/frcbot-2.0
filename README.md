@@ -52,6 +52,6 @@ NGROK_SUBDOMAIN=subdomain
 | URL                     | Description                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `http://localhost:3000` | Your FRCBot instance                                                                                              |
-| `http://localhost:3001` | The ngrok dashboard                                                                                               |
-| `http://localhost:3002` | The Datastore viewer                                                                                              |
+| `http://localhost:3001` | The [ngrok](https://ngrok.com) dashboard                                                                          |
+| `http://localhost:3002` | The Datastore viewer (powered by [dsui](https://github.com/streamrail/dsui))                                      |
 | `http://localhost:3003` | The raw Datastore API is exposed here. [[Reference](https://cloud.google.com/datastore/docs/reference/data/rest)] |
