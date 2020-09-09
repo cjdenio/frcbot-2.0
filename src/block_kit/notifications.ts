@@ -31,7 +31,7 @@ export function match_score(
         {
           type: "mrkdwn",
           text:
-            'Click "FRCBot" in the Slack sidebar to manage your subscriptions or unsusbcribe from future notifications.',
+            'Click "FRCBot" in the Slack sidebar to manage your subscriptions or unsubscribe from future notifications.',
         },
       ],
     },
