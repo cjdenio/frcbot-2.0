@@ -96,7 +96,7 @@ export function initViews(app: App) {
         blocks: bk.subscriptionAdded(
           { ...subscription, user: body.user.id },
           payload.team_id,
-          "A014MDFDM7C"
+          body.api_app_id
         ),
         text: `This channel is now subscribed to ${subscription.event.name}!`,
       });
