@@ -14,7 +14,7 @@
     "discord.js": "^12.2.0",
     "express": "^4.17.1",
     "luxon": "^1.24.1",
-    "sharp": "^0.25.3"
+    "sharp": "^0.30.5"
   },
   "scripts": {
     "start": "node dist/index.js",
